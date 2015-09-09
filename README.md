@@ -17,7 +17,8 @@ Part 2 is to profile the serial and parallel implementations.
   Provide a graph (pdf or jpeg) comparing the serial and parallel algorithms where the parallel algorithm uses a thread pool of size 4.
   Provide a graph (pdf or jpeg) comparing the runtime of the parallel algorthm for N=16e5, and a thread pool of size = 2, 4, 6, 8, 16, 32, 64, 1024.
   
-  In your README file:
+In your README file:
+
     - document: 
       - java version
       - linux kernel version
@@ -27,7 +28,6 @@ Part 2 is to profile the serial and parallel implementations.
       - number of processes visable on the system
       (NOTE: if you are unsure how to aquire any of the above information,
              ask google before you ask your TA)
-
     - explain your results (the two graphs).
 
 
