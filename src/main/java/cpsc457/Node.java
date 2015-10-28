@@ -1,18 +1,18 @@
+package cpsc457;
+
 class Node<T>{
-	private <T> itemM;
+	private T itemM;
 	private Node nextM;
 	
 	//default constructor
-	public Node(){
-		
+	public Node()   {
 		itemM=null;
 		nextM=null;
-
 	}
 	
 
 	//constructor given an item and next Node
-	Public Node(<T> item, Node next){
+	public Node(T item, Node next){
 		itemM = item;
 		nextM = next;
 		
@@ -24,7 +24,7 @@ class Node<T>{
 
 	}
 	
-	public setItem(T item){
+	public void setItem(T item){
 
 		itemM = item;
 
