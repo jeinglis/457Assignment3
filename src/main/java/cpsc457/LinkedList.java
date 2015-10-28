@@ -46,8 +46,8 @@ public class LinkedList<T> implements Iterable<T> {
 	current = headM;
 	for(int i = 0; i<index; i++)
 		current = current.getNext();
-	
-	return current.getItem();
+	return null;
+	//return current.getItem();
     }
 
     public void sort(Comparator<T> comp) {
@@ -73,7 +73,7 @@ public class LinkedList<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-	return new Iterator;
+	return null;
 
 	//ptr = head
 	//hasnext can i keep going is ptr == null
