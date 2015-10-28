@@ -7,9 +7,18 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 public class LinkedList<T> implements Iterable<T> {
- 
+	
+	private int sizeM;
+	protected Node headM;
+	protected Node current;
+
     public LinkedList() {
+
+	sizeM=0;
+	headM= null;
+	current=headM;
     }
 
     public LinkedList<T> append(T t) {
@@ -17,18 +26,28 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public int size() {
-        return 0;
+        return sizeM;
     }
 
     public boolean isEmpty() {
-        return true;
+        if(headM == null)
+		return true;
+	else
+		return false;
     }
 
     public void clear() {
+	headM = null;
+	current = headM;
+	sizeM=0;
     }
 
     public T get(int index) {
-	return null;
+	current = headM;
+	for(int i = 0; i<index; i++)
+		current = current.getNext();
+	
+	return current.getItem();
     }
 
     public void sort(Comparator<T> comp) {
@@ -54,7 +73,12 @@ public class LinkedList<T> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-	return null;
+	return new Iterator;
+
+	//ptr = head
+	//hasnext can i keep going is ptr == null
+	//next points to the next return value of T (T v =ptr.value;ptr=ptr.next;return v;
+	//remove don't need it
     }
 
     static class MergeSort<T> { // object method pattern;
@@ -65,9 +89,13 @@ public class LinkedList<T> implements Iterable<T> {
      }
 
      public void sort(LinkedList<T> list) {
+
+
      }
 
      public void parallel_sort(LinkedList<T> list) {
+
+
      }
  }
 
