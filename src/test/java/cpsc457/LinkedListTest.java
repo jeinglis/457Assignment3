@@ -43,6 +43,18 @@ public class LinkedListTest {
         list = null;
     }
 
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testInsert()    {
+        list.insert(3, 0).append(25);
+        list.insert(1, 1);
+        list.insert(6, 3);
+        assertTrue(list.get(1).equals(1));
+        assertTrue(list.get(0).equals(3));
+        assertTrue(list.get(3).equals(6));
+        list.insert(4, 6);
+    }
+    
+    
     /**
      * Test of append method, of class LinkedList.
      */

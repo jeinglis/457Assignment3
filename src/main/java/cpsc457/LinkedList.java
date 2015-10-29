@@ -1,6 +1,5 @@
 package cpsc457;
 
-import PartC.Node;
 import cpsc457.doNOTmodify.Pair;
 
 import java.util.*;
@@ -41,7 +40,29 @@ public class LinkedList<T> implements Iterable<T> {
         return this;
     }
     
-    public LinkedList<T> insert(T t, int index)     {
+    /**
+     * Inserts an object at the specified index in the linked list
+     * @param t object to be inserted 
+     * @param index index for object to be inserted at
+     * @return the linked list
+     * @throws IndexOutOfBoundsException if you attempt to insert outside of the bounds of LinkedList 
+     */
+    public LinkedList<T> insert(T t, int index) throws IndexOutOfBoundsException    {
+        if (index == 0) {
+            this.push_front(t);
+        } else if (index == sizeM) {
+            this.append(t);
+        } else if (index > sizeM || index < 0)    { 
+            throw new IndexOutOfBoundsException();
+        } else {
+            Node<T> cursorM = headM;
+            for (int i = 0; i < index - 1; i++) {
+                cursorM = cursorM.getNext();
+            }
+            Node<T> cursorNext = cursorM.nextM;
+            cursorM.nextM = new Node(t, cursorNext);
+        }
+        sizeM++;
         return this;
     }
 
