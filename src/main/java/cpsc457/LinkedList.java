@@ -39,13 +39,6 @@ public class LinkedList<T> implements Iterable<T> {
         sizeM++;
         return this;
     }
-    
-    public LinkedList<T> insert(T t, int index)     {
-        for (int i = 0; i < index; i++)     {
-            
-        }
-        return this;
-    }
 
     /**
      * Get the size of the linked list
