@@ -20,14 +20,45 @@ public class LinkedList<T> implements Iterable<T> {
         current = headM;
     }
 
+    /**
+     * Append the object T to the end of the Linked List implementation
+     * @param t object to be appended
+     * @return The linked list being appended to
+     */
     public LinkedList<T> append(T t) {
+        if (headM == null) {
+            headM = new Node(t);
+        } else {
+            Node end = headM;
+            while (end.hasNext()) {
+                end = end.getNext();
+            }
+            end.setNext(new Node(t));
+
+        }
+        sizeM++;
+        return this;
+    }
+    
+    public LinkedList<T> insert(T t, int index)     {
+        for (int i = 0; i < index; i++)     {
+            
+        }
         return this;
     }
 
+    /**
+     * Get the size of the linked list
+     * @return size of linked list
+     */
     public int size() {
         return sizeM;
     }
 
+    /**
+     * Check if linked list is empty or not
+     * @return true if empty, false if not
+     */
     public boolean isEmpty() {
         if (headM == null) {
             return true;
@@ -36,12 +67,20 @@ public class LinkedList<T> implements Iterable<T> {
         }
     }
 
+    /**
+     * Clear the linked list
+     */
     public void clear() {
         headM = null;
         current = headM;
         sizeM = 0;
     }
 
+    /**
+     * Get the object at index in the linked list
+     * @param index index of object to retrieve
+     * @return reference to object at index
+     */
     public T get(int index) {
         current = headM;
         for (int i = 0; i < index; i++) {
@@ -50,10 +89,19 @@ public class LinkedList<T> implements Iterable<T> {
         return current.getItem();
     }
 
+    /**
+     * Implement a typical merge sort to sort the values inside the linked list
+     * @param comp 
+     */
     public void sort(Comparator<T> comp) {
         new MergeSort<T>(comp).sort(this);
     }
 
+    
+    /**
+     * implement a parallel merge sort to sort the linked list
+     * @param comp 
+     */
     public void par_sort(Comparator<T> comp) {
         new MergeSort<T>(comp).parallel_sort(this);
     }
@@ -90,7 +138,12 @@ public class LinkedList<T> implements Iterable<T> {
         }
 
         public void sort(LinkedList<T> list) {
-
+            
+        }
+        
+        public void merge(LinkedList<T> A, LinkedList<T> B) {
+            LinkedList C = new LinkedList<>();
+            
         }
 
         public void parallel_sort(LinkedList<T> list) {

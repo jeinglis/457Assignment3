@@ -1,15 +1,29 @@
 package cpsc457;
 
 class Node<T>{
-	private T itemM;
-	private Node nextM;
+	protected T itemM;
+	protected Node nextM;
 	
 	//default constructor
 	public Node()   {
 		itemM=null;
 		nextM=null;
 	}
+        
+        public Node(T t)    {
+            itemM = t;
+            nextM = null;
+        }
+        
+        public boolean hasNext()    {
+            if (nextM == null)
+                return false;
+            return true;
+        }
 	
+        public void setNext(Node<T> node)   {
+            this.nextM = node;
+        }
 
 	//constructor given an item and next Node
 	public Node(T item, Node next){
