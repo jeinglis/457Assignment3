@@ -1,5 +1,6 @@
 package cpsc457;
 
+import PartC.Node;
 import cpsc457.doNOTmodify.Pair;
 
 import java.util.*;
@@ -85,6 +86,23 @@ public class LinkedList<T> implements Iterable<T> {
         }
         return current.getItem();
     }
+    
+    public void push_back( T itemA){
+	  Node<T> new_node = new Node<T> (keyA, null );
+	  if(headM == null)
+		  headM = new_node;
+	  else {
+	      cursorM = headM.nextM;
+	      Node<T> p = headM;
+	      while (cursorM != null){
+		    cursorM = cursorM.nextM;
+		    p = p.nextM;
+	      }
+	      p.nextM = new_node;
+       }  
+	   sizeM++;
+     }
+    
 
     /**
      * Implement a typical merge sort to sort the values inside the linked list
