@@ -86,23 +86,28 @@ public class LinkedList<T> implements Iterable<T> {
         }
         return current.getItem();
     }
-    
-    public void push_back( T itemA){
-	  Node<T> new_node = new Node<T> (keyA, null );
-	  if(headM == null)
-		  headM = new_node;
-	  else {
-	      cursorM = headM.nextM;
-	      Node<T> p = headM;
-	      while (cursorM != null){
-		    cursorM = cursorM.nextM;
-		    p = p.nextM;
-	      }
-	      p.nextM = new_node;
-       }  
-	   sizeM++;
-     }
-    
+
+    /**
+     * Add the object to the front of the linked list
+     * @param itemA object to add
+     */
+    public LinkedList<T> push_front(T itemA) {
+        Node<T> cursorM = null;
+        Node<T> new_node = new Node<T>(itemA);
+        if (headM == null) {
+            headM = new_node;
+        } else {
+            cursorM = headM.nextM;
+            Node<T> p = headM;
+            while (cursorM != null) {
+                cursorM = cursorM.nextM;
+                p = p.nextM;
+            }
+            p.nextM = new_node;
+        }
+        sizeM++;
+        return this;
+    }
 
     /**
      * Implement a typical merge sort to sort the values inside the linked list
