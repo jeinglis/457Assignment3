@@ -14,8 +14,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
- * @author brad
+ * Used to test the LinkedList class
+ * @author Brad
  */
 public class LinkedListTest {
     LinkedList<Integer> list;
@@ -52,6 +52,17 @@ public class LinkedListTest {
         assertTrue(list.get(0).equals(3));
         assertTrue(list.get(3).equals(6));
         list.insert(4, 6);
+    }
+    
+    /**
+     * Tests both iterator and the toString method in LinkedList
+    */ 
+    @Test
+    public void testToString()  {
+        for (int i = 0; i < 5; i++) {
+            list.insert(i + 1, i);
+        }
+        assertTrue((list.toString()).contains("{ 1, 2, 3, 4, 5 }"));
     }
     
     
@@ -111,7 +122,7 @@ public class LinkedListTest {
     /**
      * Test of par_sort method, of class LinkedList.
      */
-    @Test
+    @Test(timeout=5000)
     public void testPar_sort_LinkedList() {
         fail("You haven't implemented the test for parallel sort yet!");
     }
@@ -119,8 +130,19 @@ public class LinkedListTest {
     /**
      * Test of sort method, of class LinkedList.
      */
-    @Test
+    @Test(timeout=15000)
     public void testSort_LinkedList() {
-        fail("You haven't implemented a test for sort yet!");
+        list.append(14);
+        list.append(13);
+        list.append(12);
+        list.append(11);
+        list.append(10);
+        list.append(5);
+        list.append(4);
+        list.append(3);
+        
+        LinkedList.sort(list);
+        
+        assertTrue(list.toString().contains("{ 3, 4, 5, 10, 11, 12, 13, 14 }"));
     }
 }

@@ -1,54 +1,62 @@
 package cpsc457;
 
-class Node<T>{
-	protected T itemM;
-	protected Node nextM;
-	
-	//default constructor
-	public Node()   {
-		itemM=null;
-		nextM=null;
-	}
-        
-        public Node(T t)    {
-            itemM = t;
-            nextM = null;
+class Node<T extends Comparable> {
+
+    protected T itemM;
+    protected Node<T> nextM;
+
+    //default constructor
+    public Node()    {
+        itemM = null;
+        nextM = null;
+    }
+
+    public Node(T t) {
+        itemM = t;
+        nextM = null;
+    }
+
+    public boolean hasNext() {
+        if (nextM == null) {
+            return false;
         }
-        
-        public boolean hasNext()    {
-            if (nextM == null)
-                return false;
-            return true;
-        }
-	
-        public void setNext(Node<T> node)   {
-            this.nextM = node;
-        }
+        return true;
+    }
 
-	//constructor given an item and next Node
-	public Node(T item, Node next){
-		itemM = item;
-		nextM = next;
-		
-	}
+    public void setNext(Node<T> node) {
+        this.nextM = node;
+    }
 
-	public T getItem(){
+    //constructor given an item and next Node
+    public Node(T item, Node next) {
+        itemM = item;
+        nextM = next;
 
-		return itemM;
+    }
 
-	}
-	
-	public void setItem(T item){
+    public T getItem() {
 
-		itemM = item;
+        return itemM;
 
-	}
+    }
 
-	public Node getNext(){
-	
-	return nextM;
+    public void setItem(T item) {
 
-	}
+        itemM = item;
+
+    }
+
+    public Node getNext() {
+
+        return nextM;
+
+    }
+    
+    @Override
+    public String toString()    {
+        return itemM.toString();
+    }
+    
 
 //synchronize vs mutex lock unlock
 //with functions sync will force that only one func gets executed at a time with same instance
@@ -56,4 +64,5 @@ class Node<T>{
 //can use sync statement inside function you can use sync(a) which locks just that variable
 //log _a b = bloga , log _a a = 1, 1 2 4 8 16 number of threads number at that level + level -1
 //ln2^n = n, (log _b a) / (log _b c) = log _c a
+
 }

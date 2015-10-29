@@ -6,18 +6,56 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.naming.OperationNotSupportedException;
 
-public class LinkedList<T> implements Iterable<T> {
-
+/**
+ * 
+ * @author Brad & James
+ * @param <T> 
+ */
+public class LinkedList<T extends Comparable> implements Iterable<T> {
+    private static int idValue = 0;
+    private int id;
     private int sizeM;
     protected Node<T> headM;
+    //TODO evaluate whether or not this is necessary
     protected Node<T> current;
+    
 
     public LinkedList() {
-
+        id = idValue;
+        idValue++;
         sizeM = 0;
         headM = null;
         current = headM;
+    }
+    
+    public LinkedList(LinkedList<T> list)   {
+        Iterator<T> it = list.iterator();
+        headM = null;
+        sizeM = 0;
+        id = idValue;
+        idValue++;
+        current = headM;
+        while(it.hasNext())     {
+            append(it.next());
+        }
+    }
+    
+    
+    public LinkedList(Node<T> head)     {
+        id = idValue;
+        idValue++;
+        headM = head;
+        current = headM;
+        sizeM = 0;
+        if (headM != null)  {
+            sizeM++;
+            Node<T> cursorM = headM;
+            while (cursorM.hasNext()) {
+                sizeM++;
+            }
+        }
     }
 
     /**
@@ -94,6 +132,25 @@ public class LinkedList<T> implements Iterable<T> {
         current = headM;
         sizeM = 0;
     }
+    
+    /**
+     * Cut the LinkedList at index
+     * @param index Location of node that will now be at end of the list
+     */
+    public void cut(int index)  {
+        if (headM == null)  {
+            return;
+        }
+        if (index < 0 || index >= sizeM)
+            throw new IndexOutOfBoundsException();
+        sizeM = 1;
+        Node<T> cursorM = headM;
+        for (int i = 0; i < index; i++)     {
+            cursorM = cursorM.getNext();
+            sizeM++;
+        }
+        cursorM.nextM = null;
+    }
 
     /**
      * Get the object at index in the linked list
@@ -101,11 +158,11 @@ public class LinkedList<T> implements Iterable<T> {
      * @return reference to object at index
      */
     public T get(int index) {
-        current = headM;
+        Node<T> cursorM = headM;
         for (int i = 0; i < index; i++) {
-            current = current.getNext();
+            cursorM = cursorM.getNext();
         }
-        return current.getItem();
+        return cursorM.getItem();
     }
 
     /**
@@ -129,6 +186,26 @@ public class LinkedList<T> implements Iterable<T> {
         sizeM++;
         return this;
     }
+    
+    public Node<T> getNode(int index)   {
+        Node<T> cursorM = headM;
+        for (int i = 0; i < index; i++) {
+            cursorM = cursorM.getNext();
+        }
+        return cursorM;
+    }
+    
+    @Override
+    public String toString()    {
+        StringBuilder sb = new StringBuilder("Linked List " + id + ": {");
+        Iterator i = iterator();
+        while (i.hasNext()) {
+            sb.append(" ").append(i.next()).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append(" }");
+        return sb.toString();
+    }
 
     /**
      * Implement a typical merge sort to sort the values inside the linked list
@@ -144,7 +221,7 @@ public class LinkedList<T> implements Iterable<T> {
      * @param comp 
      */
     public void par_sort(Comparator<T> comp) {
-        new MergeSort<T>(comp).parallel_sort(this);
+        new MergeSort<>(comp).parallel_sort(this);
     }
 
     public static <T extends Comparable<T>> void par_sort(LinkedList<T> list) {
@@ -152,25 +229,42 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public static <T extends Comparable<T>> void sort(LinkedList<T> list) {
-        list.sort(new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
-                return o1.compareTo(o2);
-            }
-        });
+        list.sort(Comparable::compareTo);
     }
 
     @Override
     public Iterator<T> iterator() {
-        return null;
-
+        return new LinkedListIterator<>(headM);
+        
 	//ptr = head
         //hasnext can i keep going is ptr == null
         //next points to the next return value of T (T v =ptr.value;ptr=ptr.next;return v;
         //remove don't need it
     }
+    
+    private class LinkedListIterator<T extends Comparable> implements Iterator<T>  {
+        Node<T> cursor;
+        
+        private LinkedListIterator(Node<T> head)  {
+            cursor = new Node(null, head);
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return cursor.hasNext();
+        }
 
-    static class MergeSort<T> { // object method pattern;
+        @Override
+        public T next() {
+            if (cursor.hasNext()) {
+                cursor = cursor.nextM;
+                return cursor.itemM;
+            } else
+                throw new NoSuchElementException();
+        }
+    }
+
+    static class MergeSort<T extends Comparable> { // object method pattern;
 
         final Comparator<T> comp;
 
@@ -179,12 +273,48 @@ public class LinkedList<T> implements Iterable<T> {
         }
 
         public void sort(LinkedList<T> list) {
-            
+            mergeSort(list);
         }
         
-        public void merge(LinkedList<T> A, LinkedList<T> B) {
-            LinkedList C = new LinkedList<>();
+        //TODO figure out how this is entering an infinite loop
+        
+        private LinkedList<T> mergeSort(LinkedList<T> list)  {
+            if (list.size() == 1)
+                return list;
+            LinkedList<T> L1 = new LinkedList<>(list);
+            int cutHere = list.size() / 2 - 1;
+            LinkedList<T> L2 = new LinkedList(L1.getNode(cutHere + 1));
+            L1.cut(cutHere);
             
+            L1 = mergeSort(L1);
+            L2 = mergeSort(L2);
+            
+            return merge(L1, L2);
+        }
+        
+        private LinkedList<T> merge(LinkedList<T> A, LinkedList<T> B) {
+            LinkedList C = new LinkedList<>();
+            Node<T> cursorA = A.headM;
+            Node<T> cursorB = B.headM;
+            while (cursorA != null && cursorB != null) {
+                int compare = cursorA.itemM.compareTo(cursorB.itemM);
+                if (compare >= 0) {
+                    C.append((Comparable) cursorB);
+                    cursorB = cursorB.nextM;
+                } else {
+                    C.append((Comparable) cursorA);
+                    cursorA = cursorA.nextM;
+                }
+            }
+            while (cursorA.hasNext())   {
+                C.append((Comparable) cursorA);
+                cursorA = cursorA.nextM;
+            }
+            while (cursorB.hasNext())   {
+                C.append((Comparable) cursorB);
+                cursorB = cursorB.nextM;
+            }
+            return C;
         }
 
         public void parallel_sort(LinkedList<T> list) {
