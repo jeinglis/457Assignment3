@@ -39,6 +39,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
         current = headM;
         while(it.hasNext())     {
             append(it.next());
+            sizeM++;
         }
     }
     
@@ -54,6 +55,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
             Node<T> cursorM = headM;
             while (cursorM.hasNext()) {
                 sizeM++;
+                cursorM = cursorM.getNext();
             }
         }
     }
@@ -231,6 +233,19 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
     public static <T extends Comparable<T>> void sort(LinkedList<T> list) {
         list.sort(Comparable::compareTo);
     }
+    
+    public void setLinkedList(Node<T> head)     {
+        headM = head;
+        Node<T> cursorM = headM;
+        sizeM = 0;
+        if (cursorM != null)    {
+            while (cursorM.hasNext())   {
+                cursorM = cursorM.nextM;
+                sizeM++;
+            }
+        }
+        current = headM;
+    }
 
     @Override
     public Iterator<T> iterator() {
@@ -273,7 +288,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
         }
 
         public void sort(LinkedList<T> list) {
-            mergeSort(list);
+            list.setLinkedList(mergeSort(list).getNode(0));
         }
         
         //TODO figure out how this is entering an infinite loop
@@ -293,25 +308,41 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
         }
         
         private LinkedList<T> merge(LinkedList<T> A, LinkedList<T> B) {
-            LinkedList C = new LinkedList<>();
+            LinkedList<T> C = new LinkedList<>();
             Node<T> cursorA = A.headM;
             Node<T> cursorB = B.headM;
+            Node<T> cursorC = null;
             while (cursorA != null && cursorB != null) {
                 int compare = cursorA.itemM.compareTo(cursorB.itemM);
                 if (compare >= 0) {
-                    C.append((Comparable) cursorB);
+                    C.append(cursorB.getItem());
+                    if (cursorC != null)
+                        cursorC.nextM = cursorB;
+                    cursorC = cursorB;
                     cursorB = cursorB.nextM;
                 } else {
-                    C.append((Comparable) cursorA);
+                    C.append(cursorA.getItem());
+                    if (cursorC != null)
+                        cursorC.nextM = cursorA;
+                    cursorC = cursorA;
                     cursorA = cursorA.nextM;
                 }
             }
-            while (cursorA.hasNext())   {
-                C.append((Comparable) cursorA);
+
+            while (cursorA != null) {
+                C.append(cursorA.getItem());
+                if (cursorC != null) {
+                    cursorC.nextM = cursorA;
+                }
+                cursorC = cursorA;
                 cursorA = cursorA.nextM;
             }
-            while (cursorB.hasNext())   {
-                C.append((Comparable) cursorB);
+            while (cursorB != null) {
+                C.append(cursorB.getItem());
+                if (cursorC != null) {
+                    cursorC.nextM = cursorB;
+                }
+                cursorC = cursorB;
                 cursorB = cursorB.nextM;
             }
             return C;
