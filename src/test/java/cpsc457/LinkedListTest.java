@@ -130,19 +130,20 @@ public class LinkedListTest {
     /**
      * Test of sort method, of class LinkedList.
      */
-    @Test(timeout=15000)
+    @Test//(timeout=15000)
     public void testSort_LinkedList() {
         list.append(14);
         list.append(13);
+        list.append(5);
         list.append(12);
         list.append(11);
         list.append(10);
-        list.append(5);
+        list.append(11);
         list.append(4);
         list.append(3);
         
         LinkedList.sort(list);
-        
-        assertTrue(list.toString().contains("{ 3, 4, 5, 10, 11, 12, 13, 14 }"));
+        System.out.println(list.toString());
+        assertTrue(list.toString().contains("{ 3, 4, 5, 10, 11, 11, 12, 13, 14 }"));
     }
 }
