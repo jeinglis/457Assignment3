@@ -375,8 +375,10 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 		public LinkedList<T> parallel_sort(LinkedList<T> list) {
 			@SuppressWarnings("unused")
 			String result;
+			//set the thread pool size
 			pool = Executors.newFixedThreadPool(maxThreads);
 			ParallelMergeSort toBeSorted = new ParallelMergeSort(list);
+			//creates new thread and calls call() func in ParallelMergeSort
 			Future<LinkedList<T>> sortedList= pool.submit(toBeSorted);
 
 //			try {
@@ -384,8 +386,10 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 //			} catch (ExecutionException | InterruptedException e) {
 //				e.printStackTrace();
 //			}
-
+			
+			//kills the thread pool
 			pool.shutdown();
+			//gets the linkedlist returned by the thread
 			return sortedList.get();
 		}
 
@@ -395,12 +399,14 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 			public ParallelMergeSort(LinkedList<T> list) {
 				sortList = list;
+				//decrement the thread count everytime a new thread is about to be made
 				maxThreads--;
 			}
 
 			@SuppressWarnings("unchecked")
 			public LinkedList<T> call() {
 
+				//same as regular merge sort
 				if (sortList.size() == 1)
 					return sortList;
 				LinkedList<T> L1 = new LinkedList<>(sortList);
@@ -408,6 +414,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 				LinkedList<T> L2 = new LinkedList<T>(L1.getNode(cutHere + 1));
 				L1.cut(cutHere);
 
+				//if there are enough threads use them
 				if (maxThreads >= 2) {
 					printf("in thread if maxthreads = %d",maxThreads);
 					ParallelMergeSort left = new ParallelMergeSort(L1);
@@ -418,7 +425,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 					return merge((LinkedList<T>) listL1, (LinkedList<T>) listL2);
 				}
-
+				//other wise use sequential merge sort
 				else {
 					L1 = mergeSort(L1);
 					L2 = mergeSort(L2);
