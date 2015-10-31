@@ -282,6 +282,8 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
     static class MergeSort<T extends Comparable> { // object method pattern;
 
         final Comparator<T> comp;
+        private ExecutorService pool;
+        
 
         public MergeSort(Comparator<T> comp) {
             this.comp = comp;
@@ -297,7 +299,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
             if (list.size() == 1)
                 return list;
             LinkedList<T> L1 = new LinkedList<>(list);
-            int cutHere = list.size() / 2 - 1;
+            int cutHere = (list.size() / 2) - 1;
             LinkedList<T> L2 = new LinkedList(L1.getNode(cutHere + 1));
             L1.cut(cutHere);
             
@@ -349,8 +351,53 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
         }
 
         public void parallel_sort(LinkedList<T> list) {
-
+        	
+        	pool = newFixedThreadPool(threadlimit);
+        	LinkedList<T> Future = submit(ParallelMergeSort(list));
+        	
+        	
+        	
+        	pool.shutdown;
         }
+    }
+    
+    public class ParallelMergeSort implements callable<Node<T>>{
+    	
+    	
+    	
+    	
+    	
+    	public ParallelMergeSort(LinkedList<T> list){
+    		
+    		pool = threadlimit;
+    		
+    	}
+    	
+    	
+    	public LinkedList<T> call(){
+    		
+    		LinkedList<T> Future = new LinkedList<T>();
+    		
+            if (list.size() == 1)
+                return list;
+            LinkedList<T> L1 = new LinkedList<>(list);
+            int cutHere = (list.size() / 2) - 1;
+            LinkedList<T> L2 = new LinkedList(L1.getNode(cutHere + 1));
+            L1.cut(cutHere);
+            
+            MergeSort right = new MergeSort(L1);
+            MergeSorte left = new MergeSort(L2);
+            
+            L1 = mergeSort(L1);
+            L2 = mergeSort(L2);
+            
+            
+            return merge(L1, L2);
+    		
+    		
+    	}
+
+    	
     }
 
 }
