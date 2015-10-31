@@ -242,7 +242,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	}
 
 	public static <T extends Comparable<T>> void par_sort(LinkedList<T> list) {
-
+		list.par_sort(Comparable::compareTo);
 	}
 
 	public static <T extends Comparable<T>> void sort(LinkedList<T> list) {
@@ -300,7 +300,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 		final Comparator<T> comp;
 		private ExecutorService pool;
-		int maxThreads;
+		int maxThreads = 64;
 
 		public MergeSort(Comparator<T> comp) {
 			this.comp = comp;
@@ -372,21 +372,21 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			return C;
 		}
 
-		public void parallel_sort(LinkedList<T> list) {
+		public LinkedList<T> parallel_sort(LinkedList<T> list) {
 			@SuppressWarnings("unused")
 			String result;
 			pool = Executors.newFixedThreadPool(maxThreads);
 			ParallelMergeSort toBeSorted = new ParallelMergeSort(list);
-			maxThreads--;
 			Future<LinkedList<T>> sortedList= pool.submit(toBeSorted);
 
-			try {
-				result = sortedList.get().toString();
-			} catch (ExecutionException | InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				result = sortedList.get().toString();
+//			} catch (ExecutionException | InterruptedException e) {
+//				e.printStackTrace();
+//			}
 
 			pool.shutdown();
+			return sortedList.get();
 		}
 
 		public class ParallelMergeSort implements Callable<LinkedList<T>> {
@@ -395,6 +395,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 			public ParallelMergeSort(LinkedList<T> list) {
 				sortList = list;
+				maxThreads--;
 			}
 
 			@SuppressWarnings("unchecked")
@@ -408,11 +409,10 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 				L1.cut(cutHere);
 
 				if (maxThreads >= 2) {
-
+					printf("in thread if maxthreads = %d",maxThreads);
 					ParallelMergeSort left = new ParallelMergeSort(L1);
 					ParallelMergeSort right = new ParallelMergeSort(L2);
 					
-					maxThreads = maxThreads - 2;
 					Future<LinkedList<T>> listL1 = pool.submit(left);
 					Future<LinkedList<T>> listL2 = pool.submit(right);
 
