@@ -6,6 +6,7 @@
 package cpsc457;
 
 import java.util.Iterator;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -127,7 +128,16 @@ public class LinkedListTest {
      */
     @Test(timeout=5000)
     public void testPar_sort_LinkedList() {
-        fail("You haven't implemented the test for parallel sort yet!");
+    	Random rand = new Random(22);
+    	
+    	int numberOfValues = 100;
+    	
+    	for(int i = 0 ; i < numberOfValues; i++)
+    	 list.append(rand.nextInt(9999));
+
+         
+         LinkedList.par_sort(list);
+         System.out.println(list.toString());
     }
 
     /**

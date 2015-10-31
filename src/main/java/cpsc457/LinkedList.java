@@ -374,31 +374,30 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			return C;
 		}
 
-		public LinkedList<T> parallel_sort(LinkedList<T> list) {
-			@SuppressWarnings("unused")
-			String result;
+		public void parallel_sort(LinkedList<T> list) {
 			// set the thread pool size
 			pool = Executors.newFixedThreadPool(maxThreads);
 			ParallelMergeSort toBeSorted = new ParallelMergeSort(list);
 			// creates new thread and calls call() func in ParallelMergeSort
 			Future<LinkedList<T>> sortedList = pool.submit(toBeSorted);
 
-			// try {
-			// result = sortedList.get().toString();
-			// } catch (ExecutionException | InterruptedException e) {
-			// e.printStackTrace();
-			// }
-
+			//pass sorted list by reference 
+			try {
+				list.setLinkedList(sortedList.get().getNode(0));
+			} catch (ExecutionException | InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				
+			}
 			// kills the thread pool
 			pool.shutdown();
-			// gets the linkedlist returned by the thread
 			try {
-				return sortedList.get();
-			} catch (InterruptedException | ExecutionException e) {
+				pool.awaitTermination(20, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return list;
+			
 		}
 
 		public class ParallelMergeSort implements Callable<LinkedList<T>> {
@@ -424,7 +423,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 				//if there are enough threads use them
 				if (maxThreads >= 2) {
-					System.out.printf("in thread if maxthreads = %d",maxThreads);
+					System.out.printf("in  call() if statement: maxthreads = %d\n",maxThreads);
 					ParallelMergeSort left = new ParallelMergeSort(L1);
 					ParallelMergeSort right = new ParallelMergeSort(L2);
 					
@@ -433,7 +432,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 					try {
 						return merge(listL1.get(), listL2.get());
-					} catch (ExecutionException e) {
+					} catch (ExecutionException | InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
