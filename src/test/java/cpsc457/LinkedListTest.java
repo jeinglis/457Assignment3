@@ -6,11 +6,14 @@
 package cpsc457;
 
 import java.util.Iterator;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import cpsc457.LinkedList;
 import static org.junit.Assert.*;
 
 /**
