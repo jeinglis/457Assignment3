@@ -431,7 +431,12 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 					Future<LinkedList<T>> listL1 = pool.submit(left);
 					Future<LinkedList<T>> listL2 = pool.submit(right);
 
-					return merge((LinkedList<T>) listL1, (LinkedList<T>) listL2);
+					try {
+						return merge(listL1.get(), listL2.get());
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				//other wise use sequential merge sort
 				else {
@@ -441,7 +446,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 					return merge(L1, L2);
 
 				}
-
+				return sortList;
 			}
 
 		}
