@@ -151,7 +151,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * @param index
 	 *            Location of node that will now be at end of the list
 	 */
-	public synchronized void cut(int index) {
+	public void cut(int index) {
 		if (headM == null) {
 			return;
 		}
@@ -214,7 +214,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	}
 
 	@Override
-	public synchronized String toString() {
+	public String toString() {
 		StringBuilder sb = new StringBuilder("Linked List " + id + ": {");
 		Iterator i = iterator();
 		while (i.hasNext()) {
@@ -239,7 +239,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * 
 	 * @param comp
 	 */
-	public synchronized void par_sort(Comparator<T> comp,int availableThreads) {
+	public void par_sort(Comparator<T> comp,int availableThreads) {
 		new MergeSort<>(comp,availableThreads).parallel_sort(this);
 	}
 
@@ -268,11 +268,6 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	public Iterator<T> iterator() {
 		return new LinkedListIterator<>(headM);
 
-		// ptr = head
-		// hasnext can i keep going is ptr == null
-		// next points to the next return value of T (T v
-		// =ptr.value;ptr=ptr.next;return v;
-		// remove don't need it
 	}
 
 	private class LinkedListIterator<T extends Comparable> implements
@@ -302,7 +297,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 		final Comparator<T> comp;
 		private ExecutorService pool;
-		int maxThreads = 64;
+		int maxThreads = 4;
 
 		public MergeSort(Comparator<T> comp) {
 			this.comp = comp;
@@ -373,6 +368,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			}
 			return C;
 		}
+		
 
 		public void parallel_sort(LinkedList<T> list) {
 			// set the thread pool size
@@ -400,6 +396,12 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			
 		}
 
+		/*
+		 * This class implements the callable interface and is used by 
+		 * the parallel_sort method above.
+		 */
+
+		
 		public class ParallelMergeSort implements Callable<LinkedList<T>> {
 
 			private LinkedList<T> sortList;
@@ -410,7 +412,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 				maxThreads--;
 			}
 
-			@SuppressWarnings("unchecked")
+
 			public LinkedList<T> call() {
 
 				//same as regular merge sort

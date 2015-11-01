@@ -126,21 +126,30 @@ public class LinkedListTest {
     /**
      * Test of par_sort method, of class LinkedList.
      */
-    @Test(timeout=5000)
+    @Test
     public void testPar_sort_LinkedList() throws InterruptedException {
     	Random rand = new Random(22);
     	
-    	int numberOfValues = 100;
-    	int numberOfThreads = 0;
-    	int []threadTests = {2,3,6,8,16,32,64,1024};
+    	int numberOfThreads = 4;
+    	double [] Tests = {1e5, 2e5,4e5,8e5,16e5};
+    	long startPar,endPar;
+    	long startSeq,endSeq;
+    
 
 
-    	for(int i = 0; i< threadTests.length; i++){
-        	for(int j = 0 ; j < numberOfValues; j++)
-           	 list.append(rand.nextInt(9999));
-       	 numberOfThreads = threadTests[i];
+    	for(int i = 0; i< Tests.length; i++){
+        	for(double j = 0 ; j < Tests[i]; j++)
+           	 list.append(rand.nextInt(999));
+         startPar = System.currentTimeMillis();
          LinkedList.par_sort(list,numberOfThreads);
-         System.out.printf("Results for %d Threads = %s \n", numberOfThreads, list.toString());
+         endPar = System.currentTimeMillis();
+         System.out.printf("The %f item parallel sort took %d seconds \n", Tests[i], (endPar-startPar)/1000);
+         
+         startSeq = System.currentTimeMillis();
+         LinkedList.sort(list);
+         endSeq = System.currentTimeMillis();
+         System.out.printf("The %f item sequential sort took %d seconds \n", Tests[i], (endSeq-startSeq)/1000);
+         System.out.println("");
          list.clear();
     	}
         
