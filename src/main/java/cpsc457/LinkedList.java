@@ -239,12 +239,12 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * 
 	 * @param comp
 	 */
-	public synchronized void par_sort(Comparator<T> comp) {
-		new MergeSort<>(comp).parallel_sort(this);
+	public synchronized void par_sort(Comparator<T> comp,int availableThreads) {
+		new MergeSort<>(comp,availableThreads).parallel_sort(this);
 	}
 
-	public static <T extends Comparable<T>> void par_sort(LinkedList<T> list) {
-		list.par_sort(Comparable::compareTo);
+	public static <T extends Comparable<T>> void par_sort(LinkedList<T> list, int availableThreads) {
+		list.par_sort(Comparable::compareTo,availableThreads);
 	}
 
 	public static <T extends Comparable<T>> void sort(LinkedList<T> list) {
@@ -423,7 +423,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 				//if there are enough threads use them
 				if (maxThreads >= 2) {
-					System.out.printf("in  call() if statement: maxthreads = %d\n",maxThreads);
+					//System.out.printf("in  call(): maxthreads = %d\n",maxThreads);
 					ParallelMergeSort left = new ParallelMergeSort(L1);
 					ParallelMergeSort right = new ParallelMergeSort(L2);
 					
