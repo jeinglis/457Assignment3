@@ -14,13 +14,17 @@ public class RandomTests {
     // This test provides the raw materials for profiling your merge sort
     @Test
     public void test_a_big_random_list() throws Exception {
+        System.out.println("Starting test_a_big_random_list");
         Random r = new Random();
         LinkedList<Integer> list = new LinkedList<Integer>();
 
-        for(int i=0; i<2e6; i++) {
+        for(int i=0; i<2e5; i++) {
             list.append(r.nextInt());
+            if (i % 4000 == 1)
+                System.out.println(i);
         }
 
+        System.out.println("Beginning the sort:");
         long start = System.currentTimeMillis();
         LinkedList.sort(list);
         long end = System.currentTimeMillis();
@@ -47,7 +51,7 @@ public class RandomTests {
     // how we will evaluate the correctness of your code
 
 
-    @Test
+    @Test(timeout=15000)
     public void sort_lots_of_small_random_lists_in_serial() {
         Random r = new Random();
         for(int k=0; k<1e5; k++) {
@@ -77,7 +81,7 @@ public class RandomTests {
         }
     }
 
-    @Test
+    @Test(timeout=15000)
     public void testEmptyInput() {
         testFailedInput(new int[]{});
     }
