@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -24,7 +25,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	// TODO evaluate whether or not this is necessary
 	protected Node<T> current;
 
-        public static void main(String[] args)  {
+        public static void main(String[] args) throws InterruptedException  {
             System.out.println("Starting the comparisons:");
             double[] counts = new double[5];
             counts[0] = 1e5;
@@ -101,7 +102,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 *            object to be appended
 	 * @return The linked list being appended to
 	 */
-	public synchronized LinkedList<T> append(T t) {
+	public  LinkedList<T> append(T t) {
 		if (headM == null) {
 			headM = new Node(t);
 		} else {
@@ -127,7 +128,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * @throws IndexOutOfBoundsException
 	 *             if you attempt to insert outside of the bounds of LinkedList
 	 */
-	public synchronized LinkedList<T> insert(T t, int index)
+	public  LinkedList<T> insert(T t, int index)
 			throws IndexOutOfBoundsException {
 		if (index == 0) {
 			this.push_front(t);
@@ -172,7 +173,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	/**
 	 * Clear the linked list
 	 */
-	public synchronized void clear() {
+	public  void clear() {
 		headM = null;
 		current = headM;
 		sizeM = 0;
@@ -184,7 +185,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * @param index
 	 *            Location of node that will now be at end of the list
 	 */
-	public synchronized void cut(int index) {
+	public  void cut(int index) {
 		if (headM == null) {
 			return;
 		}
@@ -206,7 +207,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 *            index of object to retrieve
 	 * @return reference to object at index
 	 */
-	public synchronized T get(int index) {
+	public  T get(int index) {
 		Node<T> cursorM = headM;
 		for (int i = 0; i < index; i++) {
 			cursorM = cursorM.getNext();
@@ -220,7 +221,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * @param itemA
 	 *            object to add
 	 */
-	public synchronized LinkedList<T> push_front(T itemA) {
+	public  LinkedList<T> push_front(T itemA) {
 		Node<T> cursorM = null;
 		Node<T> new_node = new Node<T>(itemA);
 		if (headM == null) {
@@ -238,7 +239,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 		return this;
 	}
 
-	public synchronized Node<T> getNode(int index) {
+	public  Node<T> getNode(int index) {
 		Node<T> cursorM = headM;
 		for (int i = 0; i < index; i++) {
 			cursorM = cursorM.getNext();
@@ -247,7 +248,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	}
 
 	@Override
-	public synchronized String toString() {
+	public  String toString() {
 		StringBuilder sb = new StringBuilder("Linked List " + id + ": {");
 		Iterator i = iterator();
 		while (i.hasNext()) {
@@ -262,8 +263,9 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * Implement a typical merge sort to sort the values inside the linked list
 	 * 
 	 * @param comp
+	 * @throws InterruptedException 
 	 */
-	public  void sort(Comparator<T> comp) {
+	public  void sort(Comparator<T> comp) throws InterruptedException {
 		new MergeSort<T>(comp).sort(this);
 	}
 
@@ -272,7 +274,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 	 * 
 	 * @param comp
 	 */
-	public synchronized void par_sort(Comparator<T> comp,int availableThreads) {
+	public  void par_sort(Comparator<T> comp,int availableThreads) {
 		new MergeSort<>(comp,availableThreads).parallel_sort(this);
 	}
 
@@ -280,7 +282,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 		list.par_sort(Comparable::compareTo,availableThreads);
 	}
 
-	public static <T extends Comparable<T>> void sort(LinkedList<T> list) {
+	public static <T extends Comparable<T>> void sort(LinkedList<T> list) throws InterruptedException {
 		list.sort(Comparable::compareTo);
 	}
 
@@ -322,7 +324,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 		}
 
 		@Override
-		public synchronized T next() {
+		public  T next() {
 			if (cursor.hasNext()) {
 				cursor = cursor.nextM;
 				return cursor.itemM;
@@ -330,9 +332,20 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 				throw new NoSuchElementException();
 		}
 	}
-
+	
+	
+	
+/**********************************************************
+ * This is the class we used semaphores in
+ * Due to the way our code was written the only time
+ * a lock may be needed is during the merge to prevent concurrent writes
+ * a semaphore (mergeAppend)has been used in the merge method 
+ * this locks the call to append so only one thread may enter at once
+ *************************************************************/
+	
+	
 	static class MergeSort<T extends Comparable> { // object method pattern;
-
+		private Semaphore mergeAppend  = new Semaphore(1);
 		final Comparator<T> comp;
 		private ExecutorService pool;
 		int maxThreads = 64;
@@ -346,13 +359,13 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			maxThreads = threads;
 		}
 
-		public void sort(LinkedList<T> list) {
+		public void sort(LinkedList<T> list) throws InterruptedException {
 			list.setLinkedList(mergeSort(list).getNode(0));
 		}
 
 		// TODO figure out how this is entering an infinite loop
 
-		private LinkedList<T> mergeSort(LinkedList<T> list) {
+		private LinkedList<T> mergeSort(LinkedList<T> list) throws InterruptedException {
 			if (list.size() <= 1)
 				return list;
 			LinkedList<T> L1 = new LinkedList<>(list);
@@ -365,8 +378,13 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 
 			return merge(L1, L2);
 		}
-
-		private synchronized LinkedList<T> merge(LinkedList<T> A, LinkedList<T> B) {
+/*
+ * merge method (using sempahores)
+ * receives two LinkedLists combines the two into a final sorted LinkedList
+ * returns a sorted Linked list of size A.size()+B.size()
+ * 
+ */
+		private LinkedList<T> merge(LinkedList<T> A, LinkedList<T> B) throws InterruptedException {
 			LinkedList<T> C = new LinkedList<>();
 			Node<T> cursorA = A.headM;
 			Node<T> cursorB = B.headM;
@@ -374,7 +392,9 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			while (cursorA != null && cursorB != null) {
 				int compare = cursorA.itemM.compareTo(cursorB.itemM);
 				if (compare >= 0) {
+					mergeAppend.acquire();
 					C.append(cursorB.getItem());
+					mergeAppend.release();
 					if (cursorC != null)
 						cursorC.nextM = cursorB;
 					cursorC = cursorB;
@@ -389,7 +409,9 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			}
 
 			while (cursorA != null) {
-				C.append(cursorA.getItem());
+				mergeAppend.acquire();
+				C.append(cursorB.getItem());
+				mergeAppend.release();
 				if (cursorC != null) {
 					cursorC.nextM = cursorA;
 				}
@@ -397,7 +419,9 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 				cursorA = cursorA.nextM;
 			}
 			while (cursorB != null) {
+				mergeAppend.acquire();
 				C.append(cursorB.getItem());
+				mergeAppend.release();
 				if (cursorC != null) {
 					cursorC.nextM = cursorB;
 				}
@@ -443,15 +467,14 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 		public class ParallelMergeSort implements Callable<LinkedList<T>> {
 
 			private LinkedList<T> sortList;
-
 			public ParallelMergeSort(LinkedList<T> list) {
-				sortList = list;
+				 sortList = list;
 				//decrement the thread count everytime a new thread is about to be made
 				maxThreads--;
 			}
 
 
-			public LinkedList<T> call() {
+			public  LinkedList<T> call() throws InterruptedException {
 
 				//same as regular merge sort
 				if (sortList.size() == 1)
@@ -489,6 +512,7 @@ public class LinkedList<T extends Comparable> implements Iterable<T> {
 			}
 
 		}
+		
 	}
 
 }
